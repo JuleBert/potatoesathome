@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Kommentare
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+{% for post in posts %}
+    <div>
+        <p>published: {{ post.published_date }}</p>
+        <h1><a href="">{{ post.title }}</a></h1>
+        <p>{{ post.text|linebreaksbr }}</p>
+    </div>
+{% endfor %}
+
+<form  method="post" class="post-form" action="{% url 'home:comments'%}">
+        {% csrf_token %}
+        <!--<input id="datum" type="date" name="datum" value={{ current_date }}>
+        <input id="start" type="time" name="start">
+        <input id="end" type="time" name="end"> -->
+        {{ form.as_p }}
+    <input type="submit" class="save btn btn-default" value="Ok" />
+
+{% endblock %}
+

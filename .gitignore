@@ -1,0 +1,4 @@
+.idea*
+potatoesathome_ws.code-workspace
+db.sqlite3
+potatoesathome/settings.py

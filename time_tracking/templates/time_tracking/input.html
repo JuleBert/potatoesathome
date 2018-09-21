@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Zeiterfassung
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+    <a href="{% url 'time_tracking:time_list' %}">Zur Liste</a>
+    <h1>Neuer Eintrag</h1>
+    <form  method="post" class="post-form" action="{% url 'time_tracking:input'%}">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <input type="submit" class="save btn btn-default" value="Ok" />
+    </form>
+
+    {% if latest_time_list %}
+      <table style="width:50%" class="table table-hover">
+      <tr>
+        <th>Datum</th>
+        <th>Startzeit</th>
+        <th>Endzeit</th>
+        <th>Beschreibung</th>
+        <th>Projekt</th>
+        <th>Dauer</th>
+      </tr>
+      {% for entry in latest_time_list %}
+      <tr>
+        <td>{{ entry.get_day }}</td>
+        <td>{{ entry.get_start }}</td>
+        <td>{{ entry.get_end }}</td>
+        <td><a href="{% url 'time_tracking:time_detail' entry.id %}">{{ entry.id }} {{ entry.description }}</a></td>
+        <td>{{ entry.get_project_code }}</td>
+        <td>{{ entry.get_duration }}</td>
+      </tr>
+      {% endfor %}
+      </table>  
+    {% else %}
+        <p>No times are available.</p>
+    {% endif %}
+    
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Conways game of life
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'game_of_live/css/gol_style.css' %}" />
+{% endblock %}
+
+{% block body %}
+    <div class="container" style="background-color:lightblue">	
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Willkomen zum Spiel des Lebens</h4>
+                <p>Hier können wir spielen.</p>
+                <form  method="post" class="post-form" action="{% url 'game_of_live:index'%}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                <input type="submit" class="save btn btn-default" value="Ok"/>
+            </div>
+            {% if gif_name %}
+            <div class="col-md-6">
+                <img src="{{MEDIA_URL}}{{gif_name}}" alt="game.gif" class="img-responsive" />
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+{% endblock %}
+

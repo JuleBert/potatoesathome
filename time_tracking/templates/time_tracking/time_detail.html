@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Details zur Zeiterfassung
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<table style="width:50%" class="table table-hover">
+  <tr>
+    <th>Datum</th>
+    <th>Startzeit</th>
+    <th>Endzeit</th>
+    <th>Beschreibung</th>
+    <th>Projekt</th>
+    <th>Dauer</th>
+    <th>Erfasst</th>
+    <th>Erfasst von</th>
+  </tr>
+  <tr>
+    <td>{{ time_entry.get_day }}</td>
+    <td>{{ time_entry.start_time }}</td>
+    <td>{{ time_entry.end_time }}</td>
+    <td>{{ time_entry.description }}</td>
+    <td>{{ time_entry.get_project_code }}</td>
+    <td>{{ time_entry.get_duration }}</td>
+    <td>{{ time_entry.created_at }}</td>
+    <td>{{ time_entry.created_by }}</td>
+  </tr>
+</table> 
+{% endblock %}
+
