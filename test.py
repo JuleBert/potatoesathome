@@ -1,2 +1,3 @@
+import numpy
 print("mein test")
-#Kommentar von vs code
+#Kommentar von vs codeS
