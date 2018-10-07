@@ -39,7 +39,7 @@ Latest time entries
         <td></td>
         <td></td>
         <td></td>
-        <td></td>
+        <td>Summe:</td>
         <td>{{ entries.0.get_days_work }}</td>
         <td></td>
     </tr>
@@ -48,7 +48,7 @@ Latest time entries
 
 <div class="pagination">
     <span class="step-links">
-        {% if contacts.has_previous %}
+        {% if latest_time_list.has_previous %}
             <a href="?page=1">&laquo; first</a>
             <a href="?page={{ latest_time_list.previous_page_number }}">previous</a>
         {% endif %}
@@ -57,7 +57,7 @@ Latest time entries
             Page {{ latest_time_list.number }} of {{ latest_time_list.paginator.num_pages }}.
         </span>
 
-        {% if contacts.has_next %}
+        {% if latest_time_list.has_next %}
             <a href="?page={{ latest_time_list.next_page_number }}">next</a>
             <a href="?page={{ latest_time_list.paginator.num_pages }}">last &raquo;</a>
         {% endif %}

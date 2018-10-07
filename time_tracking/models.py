@@ -31,7 +31,10 @@ class Project(models.Model):
     def __str__(self):
         return self.project_code + ' ' + self.project_description
 
-    
+class Overtime_Adjustment_Entry(models.Model):
+    adjustment_date = models.DateField('adjustment_date')
+    adjustment = models.DecimalField(max_digits=10, decimal_places=10)
+
 class Time_Entry(models.Model):
     start_time = models.DateTimeField('start time')
     end_time = models.DateTimeField('end time')
