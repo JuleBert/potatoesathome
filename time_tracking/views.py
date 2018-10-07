@@ -73,7 +73,7 @@ class TimeDetailView(DetailView):
 class TimeListView(ListView):
     template_name = 'time_tracking/time_list.html'
     #context_object_name = 'latest_time_list'
-    paginate_by = 5
+    paginate_by = 2
     
     # def get_queryset(self):
     #     """Return the last five time entries."""
@@ -83,7 +83,7 @@ class TimeListView(ListView):
         return queryset_for_time_list(100)
 
     def get_context_data(self, **kwargs):
-        context = super(SoalListView, self).get_context_data(**kwargs)
+        context = super(TimeListView, self).get_context_data(**kwargs)
         time_entries = queryset_for_time_list(100)
         paginator = Paginator(time_entries, self.paginate_by)
 
