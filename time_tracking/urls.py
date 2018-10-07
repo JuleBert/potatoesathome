@@ -4,6 +4,7 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 app_name = 'time_tracking'
+
 urlpatterns = [
 	#path('', views.input, name='input'),
     path('', views.InputView.as_view(), name='input'),
