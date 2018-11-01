@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, TemplateView
 from django.db.models.functions import TruncMonth
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -13,7 +14,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from .forms import TimeTrackingForm
 from .models import Time_Entry
 
-# Create your views here.
+
 def queryset_for_time_list(display_days):
     today_day = datetime.datetime.today()
     return_array = []
@@ -24,6 +25,8 @@ def queryset_for_time_list(display_days):
             return_array.append(the_time_entry)
     return return_array
 
+
+@method_decorator(login_required, name='dispatch')
 class InputView(TemplateView):
     form_class = TimeTrackingForm
     template_name = 'time_tracking/input.html'
@@ -62,6 +65,7 @@ class InputView(TemplateView):
     #    """Return the last five time entries."""
     #    return Time_Entry.objects.order_by('-start_time')[:5]
 
+@method_decorator(login_required, name='dispatch')
 class TimeDetailView(DetailView):
     model = Time_Entry
     context_object_name = 'time_entry'
@@ -69,7 +73,8 @@ class TimeDetailView(DetailView):
 
     def get_queryset(self):
         return Time_Entry.objects.filter(id=self.kwargs['pk'])
-    
+
+@method_decorator(login_required, name='dispatch')
 class TimeListView(ListView):
     template_name = 'time_tracking/time_list.html'
     #context_object_name = 'latest_time_list'

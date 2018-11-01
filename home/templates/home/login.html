@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}
+potatoesathome Login
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'home/signin.css' %}" />
+{% endblock %}
+
+{% block body %}
+    <a class="lgn" href="{% url 'home:menu' %}">Zum Menu</a>
+    <br>
+    <a class="lgn" href="{% url 'home:signup' %}">Neuen Benutzer anlegen</a>
+    <br>
+    <!--
+    <form class="form-signin">
+      <label for="inputUser" class="sr-only">Username</label>
+      <input type="email" id="inputUser" class="form-control" placeholder="user" required autofocus>
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input type="password" id="inputPassword" class="form-control" placeholder="password" required>
+      <div class="checkbox mb-3">
+        <label>
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+      </div>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+    -->
+    {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
+    <form method="POST" class="form-signin">
+        {% csrf_token %}
+        {{form|crispy}}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+    <div class="lgn"> </div>
+
+{% endblock %}
