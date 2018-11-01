@@ -5,7 +5,7 @@
     <title>{% block title %}{% endblock %}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
+    <meta name="description" content="My little website">
     <meta name="author" content="Sidom">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -43,6 +43,7 @@
                         </a>
 					    <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=gqOEoUR5RHg">Bootstrap</a></li>
+                            <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=eIWRbvE1B2E&t=1343s">W3Newbie</a></li>
                             <li><a class="dropdown-item" href="https://docs.djangoproject.com/en/2.0/intro/tutorial01/">Django Polls App</a></li>
                             <li><a class="dropdown-item" href="https://docs.djangoproject.com/en/2.0/topics/forms/modelforms/">ModelForms</a></li>
                             <li><a class="dropdown-item" href="https://tutorial.djangogirls.org/en/django_views/">Django Girls</a></li>
@@ -50,7 +51,15 @@
 						</ul>
 					</li>
                     <li><a href="{% url 'home:comments' %}">Kommentare</a></li>
-                    <li><a href="#">Kontakt</a></li>
+                    <li><a href="https://example.com" id="dropdownAcount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Konto
+                        </a>
+                        <!--<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">-->
+						<ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'home:logout' %}">Logout</a></li>
+                            <li><a class="dropdown-item" href="{% url 'home:changePassword' %}">Passwort ändern</a></li>
+						</ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -81,7 +90,6 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
 	{% block menu_script %}{% endblock %}
 </body>
 </html>
