@@ -18,13 +18,13 @@ from .forms import PostForm
 # Create your views here.
 def home(request):
     context = {
-        'user': 'User 23'
+        'user': request.user,
     }
     return render(request, 'home/home.html', context)
 	
 def menu(request):
     context = {
-        'user': 'User 23'
+        'user': request.user,
     }
     return render(request, 'base.html', context)
 
@@ -43,7 +43,9 @@ def comments(request):
             posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')[:5]
             form = PostForm()
             context = {'form': form,
-                       'posts': posts}
+                       'posts': posts,
+                       'user': request.user,
+                       }
             return render(request, 'home/comments.html', context)
     return render(request, 'home/comments.html', context)
 
