@@ -9,87 +9,107 @@
     <meta name="author" content="Sidom">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!--<script src="{% static 'js/jquery-3.3.1.js' %}"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
-	<link rel="stylesheet" type="text/css" href="{% static 'css/tutorial.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
     {% block head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-invers">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#"><img src="{% static 'images/w3newbie.png' %}" alt="w3newbie" class="img-responsive" /></a>
-            </div>
-            <div class="collapse navbar-collapse" id="myNavbar">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="active"><a href="{% url 'home:home' %}">Home</a></li>
-                    <li><a href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Meine Projekte
-                        </a>
-                        <!--<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">-->
-						<ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'game_of_live:index' %}">Game of Live</a></li>
-                            <li><a class="dropdown-item" href="{% url 'time_tracking:input' %}">Zeiterfassung</a></li>
-						</ul>
-                    </li>
-                    <li><a href="https://example.com" id="dropdownSources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Quellen
-                        </a>
-					    <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=gqOEoUR5RHg">Bootstrap</a></li>
-                            <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=eIWRbvE1B2E&t=1343s">W3Newbie</a></li>
-                            <li><a class="dropdown-item" href="https://docs.djangoproject.com/en/2.0/intro/tutorial01/">Django Polls App</a></li>
-                            <li><a class="dropdown-item" href="https://docs.djangoproject.com/en/2.0/topics/forms/modelforms/">ModelForms</a></li>
-                            <li><a class="dropdown-item" href="https://tutorial.djangogirls.org/en/django_views/">Django Girls</a></li>
-                            <li><a class="dropdown-item" href="#">next</a></li>
-						</ul>
-					</li>
-                    <li><a href="{% url 'home:comments' %}">Kommentare</a></li>
-                    <li><a href="https://example.com" id="dropdownAcount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Konto
-                        </a>
-                        <!--<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">-->
-						<ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'home:logout' %}">Logout</a></li>
-                            <li><a class="dropdown-item" href="{% url 'home:changePassword' %}">Passwort ändern</a></li>
-						</ul>
-                    </li>
-                </ul>
-            </div>
+<nav class="navbar navbar-invers">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            {% if user.is_authenticated %}
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            {% endif %}
+            <a class="navbar-brand" href="#"><img src="{% static 'images/w3newbie.png' %}" alt="w3newbie"
+                                                  class="img-responsive"/></a>
         </div>
-    </nav>
-	{% block body %}{% endblock %}
+        {% if user.is_authenticated %}
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="active"><a class="menu-link" href="{% url 'home:home' %}">Home</a></li>
+                <li><a class="menu-link" href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                    Meine Projekte
+                </a>
+                    <!--<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">-->
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'game_of_live:index' %}">Game of Live</a></li>
+                        <li><a class="dropdown-item" href="{% url 'time_tracking:input' %}">Zeiterfassung</a></li>
+                    </ul>
+                </li>
+                <li><a class="menu-link" href="https://example.com" id="dropdownSources" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                    Quellen
+                </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="https://www.youtube.com/watch?v=gqOEoUR5RHg">Bootstrap</a>
+                        </li>
+                        <li><a class="dropdown-item"
+                               href="https://www.youtube.com/watch?v=eIWRbvE1B2E&t=1343s">W3Newbie</a></li>
+                        <li><a class="dropdown-item" href="https://docs.djangoproject.com/en/2.0/intro/tutorial01/">Django
+                            Polls App</a></li>
+                        <li><a class="dropdown-item"
+                               href="https://docs.djangoproject.com/en/2.0/topics/forms/modelforms/">ModelForms</a></li>
+                        <li><a class="dropdown-item" href="https://tutorial.djangogirls.org/en/django_views/">Django
+                            Girls</a></li>
+                        <li><a class="dropdown-item" href="#">next</a></li>
+                    </ul>
+                </li>
+                <li><a class="menu-link" href="{% url 'home:comments' %}">Kommentare</a></li>
+                <li><a class="menu-link" href="https://example.com" id="dropdownAcount" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
+                    Konto
+                </a>
+                    <!--<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">-->
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'home:logout' %}">Logout</a></li>
+                        <li><a class="dropdown-item" href="{% url 'home:changePassword' %}">Passwort ändern</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</nav>
 
-    <footer class="container-fluid text-center">
-        <div class="row">
-            <div class="col-sm-4">
-                <h3>Contact us!</h3>
-                <br>
-                <h4> Our address and contact info here.</h4>
-            </div>
-            <div class="col-sm-4">
-                <h3>Connect</h3>
-                <a href="#" class="fa fa-facebook"></a>
-                <a href="#" class="fa fa-twitter"></a>
-                <a href="#" class="fa fa-google"></a>
-                <a href="#" class="fa fa-linkedin"></a>
-                <a href="#" class="fa fa-youtube"></a>
-            </div>
-            <div class="col-sm-4">
-                <img src="{% static 'images/bunny.png' %}" alt="bunny" class="img-responsive" />
-            </div>
+{% block body %}{% endblock %}
+
+<footer class="container-fluid text-center">
+    <div class="row">
+        <div class="col-sm-4">
+            <h3>Contact us!</h3>
+            <br>
+            <h4> Our address and contact info here.</h4>
         </div>
-    </footer>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-	{% block menu_script %}{% endblock %}
+        <div class="col-sm-4">
+            <h3>Connect</h3>
+            <a href="#" class="fa fa-facebook"></a>
+            <a href="#" class="fa fa-twitter"></a>
+            <a href="#" class="fa fa-google"></a>
+            <a href="#" class="fa fa-linkedin"></a>
+            <a href="#" class="fa fa-youtube"></a>
+        </div>
+        <div class="col-sm-4">
+            <img src="{% static 'images/bunny.png' %}" alt="bunny" class="img-responsive"/>
+        </div>
+    </div>
+</footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+{% block menu_script %}{% endblock %}
 </body>
 </html>
