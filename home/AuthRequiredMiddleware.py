@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from potatoesathome import settings
 
 class AuthRequiredMiddleware(object):
-    re_activate = re.compile('activate/[0-9a-zA-Z]{2}/[0-9a-zA-Z\-]+')
+    re_activate = re.compile('activate/[A-Z]+/[0-9a-zA-Z\-]+')
     def __init__(self, get_response):
         self.get_response = get_response
 
