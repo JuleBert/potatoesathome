@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.views import LoginView
 
 from .forms import RegisterForm
 from .tokens import account_activation_token
@@ -15,7 +16,27 @@ from .tokens import account_activation_token
 from .models import Post
 from .forms import PostForm
 
-# Create your views here.
+
+class LoginOrRegister(auth_views.LoginView):
+    pass
+#     template_name = 'home/loginandregister.html'
+#     context = {
+#         'form': form,
+#         'current_date': datetime.datetime.now().strftime("%d.%m.%Y"),
+#         'latest_time_list': queryset_for_time_list(5)
+#     }
+#
+#     def post(self, request, *args, **kwargs):
+#         registerForm = RegisterForm(request.POST)
+#         loginForm = self.form_class
+
+class CustomLogin(LoginView):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('home:home')
+        else:
+            return super().get(self, request, *args, **kwargs)
+
 def home(request):
     context = {
         'user': request.user,
@@ -50,22 +71,11 @@ def comments(request):
     return render(request, 'home/comments.html', context)
 
 
-class LoginOrRegister(auth_views.LoginView):
-    pass
-#     template_name = 'home/loginandregister.html'
-#     context = {
-#         'form': form,
-#         'current_date': datetime.datetime.now().strftime("%d.%m.%Y"),
-#         'latest_time_list': queryset_for_time_list(5)
-#     }
-#
-#     def post(self, request, *args, **kwargs):
-#         registerForm = RegisterForm(request.POST)
-#         loginForm = self.form_class
-
 
 
 def signup(request):
+    if request.user.is_authenticated:
+        return redirect('home:home')
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():

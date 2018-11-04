@@ -42,6 +42,8 @@ class Time_Entry(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.CharField(max_length=250) #models.ForeignKey('auth.User', on_delete=models.CASCADE, default='')
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+    # user_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+    # TODO
 
     #def __str__(self):
         # my_project = get_object_or_404(Project, pk=self.project_id)
