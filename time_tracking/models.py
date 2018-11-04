@@ -4,12 +4,14 @@ from django.utils import timezone
 from django.utils.six import with_metaclass
 from django.shortcuts import get_object_or_404
 from _datetime import datetime
+from django.contrib.auth.models import User as DjangoUser
+
+#from potatoesathome import settings
 
 # python3 manage.py makemigrations time_tracking
 # See the SQL:
 # python3 manage.py sqlmigrate time_tracking 0001 
 # python3 manage.py migrate
-
 
 '''
 class UpperCharField(with_metaclass(models.SubfieldBase, models.CharField)):
@@ -42,8 +44,8 @@ class Time_Entry(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.CharField(max_length=250) #models.ForeignKey('auth.User', on_delete=models.CASCADE, default='')
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
-    # user_id = models.ForeignKey(Project, on_delete=models.CASCADE)
-    # TODO
+    #user_id = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user_id = models.ForeignKey(DjangoUser, on_delete=models.CASCADE)
 
     #def __str__(self):
         # my_project = get_object_or_404(Project, pk=self.project_id)
