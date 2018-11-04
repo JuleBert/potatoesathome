@@ -1,14 +1,20 @@
+import re
+
 from django.shortcuts import redirect
+
 from potatoesathome import settings
 
 class AuthRequiredMiddleware(object):
+    re_activate = re.compile('activate/[0-9a-zA-Z]{2}/[0-9a-zA-Z\-]+')
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
         # Code to be executed for each request before
         # the view (and later middleware) are called.
-        if request.path_info not in ['/login/','/signup/'] and '/activate/' not in request.path_info:
+        auth_paths = ['/login/','/signup/','loginandregister/']
+
+        if request.path_info not in auth_paths and self.re_activate.search(request.path_info) is None:
             if not request.user.is_authenticated:
                 return redirect('%s?next=%s' % (settings.LOGIN_path, request.path))
 
