@@ -11,8 +11,8 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.db.models.functions import TruncMonth
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
-from .forms import TimeTrackingForm
-from .models import Time_Entry
+from .forms import TimeTrackingForm, NewProjectForm, SettingsForm, OvertimeForm
+from .models import Time_Entry, SettingsModel, Overtime_Entry
 
 
 def queryset_for_time_list(display_days, user_id):
@@ -64,6 +64,83 @@ class InputView(TemplateView):
         return render(request, self.template_name, self.context)
 
 @method_decorator(login_required, name='dispatch')
+class Overtime(TemplateView):
+    form_class = OvertimeForm
+    template_name = 'time_tracking/overtime.html'
+    context_object_name = 'overtime_list'
+
+    def get(self, request, *args, **kwargs):
+        form = TimeTrackingForm()
+
+        try:
+            overtime_list = Overtime_Entry.objects.order_by('-overtime_date')[:10]
+        except Overtime_Entry.DoesNotExist:
+            overtime_list = None
+        context = {
+            'form': form,
+            'overtime_list': overtime_list
+        }
+        return render(request,self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            o_entry = form.save(commit=False)
+            o_entry.type = 'adj'
+            o_entry.user_id = request.user
+            o_entry.save()
+        o_entry = Overtime_Entry()
+        form = OvertimeForm(instance=o_entry)
+        context = {
+            'form': form,
+            'overtime_list': Overtime_Entry.objects.order_by('-overtime_date')[:10]
+        }
+        return render(request, self.template_name, context)
+
+@method_decorator(login_required, name='dispatch')
+class NewProject(TemplateView):
+    form_class = NewProjectForm
+    initial={
+        'project_code':'DATA-',
+        'employer': 'CE'
+             }
+    template_name = 'time_tracking/new_project.html'
+    def get(self, request, *args, **kwargs):
+        form = self.form_class(initial=self.initial)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            new_project = form.save(commit=False)
+            new_project.user_id = request.user
+            new_project.save()
+            return HttpResponseRedirect('')
+            # return redirect('time_tracking:input')
+        return render(request, self.template_name, {'form': form})
+
+@method_decorator(login_required, name='dispatch')
+class SettingsView(TemplateView):
+    form_class = SettingsForm
+    template_name = 'time_tracking/settings.html'
+    def get(self, request, *args, **kwargs):
+        try:
+            instance = SettingsModel.objects.latest('created_at')
+        except SettingsModel.DoesNotExist:
+            instance = None
+        form = self.form_class(instance=instance)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            settings = form.save(commit=False)
+            settings.user_id = request.user
+            settings.save()
+            return redirect('time_tracking:input')
+        return render(request, self.template_name, {'form': form})
+
+@method_decorator(login_required, name='dispatch')
 class TimeDetailView(DetailView):
     model = Time_Entry
     context_object_name = 'time_entry'
@@ -75,12 +152,7 @@ class TimeDetailView(DetailView):
 @method_decorator(login_required, name='dispatch')
 class TimeListView(ListView):
     template_name = 'time_tracking/time_list.html'
-    #context_object_name = 'latest_time_list'
     paginate_by = 2
-    
-    # def get_queryset(self):
-    #     """Return the last five time entries."""
-    #     return Time_Entry.objects.order_by('-start_time')[:5]
 
     def get_queryset(self):
         return queryset_for_time_list(100, self.request.user.id)
