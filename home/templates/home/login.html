@@ -40,6 +40,7 @@ potatoesathome Login
             {{form|crispy}}
             <button type="submit">login</button>
             <p>Not registered? <a href="{% url 'home:signup' %}">Create an account</a>
+            <p>Forgot password? <a href="{% url 'home:password_reset' %}">Reset!</a>
         </form>
     </div>
 </div>
