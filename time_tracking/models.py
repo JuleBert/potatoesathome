@@ -1,15 +1,24 @@
 #time_tracking/models.py
+from _datetime import datetime, timedelta, date
+import holidays
+
 from django.db import models
 from django.utils import timezone
 from django.utils.six import with_metaclass
 from django.shortcuts import get_object_or_404
-from _datetime import datetime
 from django.contrib.auth.models import User as DjangoUser
 
 # python3 manage.py makemigrations time_tracking
 # See the SQL:
 # python3 manage.py sqlmigrate time_tracking 0001 
 # python3 manage.py migrate
+
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days)):
+        yield start_date + timedelta(n)
+
+def calc_overtime(settings_entry, reference_date, hours_dec):
+
 
 '''
 class UpperCharField(with_metaclass(models.SubfieldBase, models.CharField)):
@@ -52,13 +61,26 @@ class SettingsModel(models.Model):
 
 class Overtime_Entry(models.Model):
     user_id = models.ForeignKey(DjangoUser, on_delete=models.CASCADE, default='1')
-    overtime_date = models.DateField('Datum')
-    overtime = models.DecimalField('Überstunden', max_digits=10, decimal_places=2)
-    type_options = (
-        ('reg', 'regular'),
-        ('adj', 'adjustment'),
-    )
-    type = models.CharField('Typ', max_length=3, choices=type_options, default = 'adj')
+    overtime_date = models.DateField('Datum', unique = True)
+    reg_overtime = models.DecimalField('Überstunden', max_digits=10, decimal_places=2)
+    adj_overtime = models.DecimalField('Überstunden', max_digits=10, decimal_places=2)
+    # type_options = (
+    #     ('reg', 'regular'),
+    #     ('adj', 'adjustment'),
+    # )
+    # type = models.CharField('Typ', max_length=3, choices=type_options, default = 'adj')
+
+    def get_overtime(self, reference_datetime):
+        my_overtime = Overtime_Entry.objects.filter(overtime_date=reference_datetime.date())[0]
+        if my_overtime.reg_overtime is not None:
+            return my_overtime.reg_overtime + float(my_overtime.adj_overtime)
+        else:
+            my_overtime = Overtime_Entry.lists.all()
+            if my_overtime is None:
+                settings = SettingsModel.objects.latest('created_at')[0]
+                for single_date in daterange(settings.start_date, reference_datetime.date()):
+
+
 
 class Time_Entry(models.Model):
     user_id = models.ForeignKey(DjangoUser, on_delete=models.CASCADE, default='1')
@@ -68,6 +90,9 @@ class Time_Entry(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.CharField(max_length=250) #models.ForeignKey('auth.User', on_delete=models.CASCADE, default='')
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    def get_overtime(self):
+        Overtime_Entry.get_overtime(self.start_time)
 
     def format_timedelta(self, seconds):
         hours, remainder = divmod(seconds, 3600)
