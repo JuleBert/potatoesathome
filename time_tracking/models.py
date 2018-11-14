@@ -15,10 +15,29 @@ from django.contrib.auth.models import User as DjangoUser
 
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):
-        yield start_date + timedelta(n)
+        yield start_date + timedelta(days=n)
 
 def calc_overtime(settings_entry, reference_date, hours_dec):
-
+    # https://pypi.org/project/holidays/
+    de_holidays = holidays.CountryHoliday('DE', prov='SN')
+    if (reference_date in de_holidays):
+        return hours_dec
+    else:
+        wd = reference_date.weekday()
+        if wd == 0:
+            return hours_dec - float(settings_entry.work_time_mon)
+        elif wd == 1:
+            return hours_dec - float(settings_entry.work_time_tue)
+        elif wd == 2:
+            return hours_dec - float(settings_entry.work_time_wed)
+        elif wd == 3:
+            return hours_dec - float(settings_entry.work_time_thu)
+        elif wd == 4:
+            return hours_dec - float(settings_entry.work_time_fri)
+        elif wd == 5:
+            return hours_dec - float(settings_entry.work_time_sat)
+        elif wd == 6:
+            return hours_dec - float(settings_entry.work_time_sun)
 
 '''
 class UpperCharField(with_metaclass(models.SubfieldBase, models.CharField)):
@@ -49,38 +68,57 @@ class Project(models.Model):
 class SettingsModel(models.Model):
     user_id = models.ForeignKey(DjangoUser, on_delete=models.CASCADE, default='1')
     created_at = models.DateTimeField(default=timezone.now)
-    start_date = models.DateField('Startdatum')
-    work_time_mon = models.DecimalField('Arbeitszeit Montag', max_digits=10, decimal_places=2)
-    work_time_tur = models.DecimalField('Arbeitszeit Dienstag', max_digits=10, decimal_places=2)
-    work_time_wed = models.DecimalField('Arbeitszeit Mittwoch', max_digits=10, decimal_places=2)
-    work_time_thu = models.DecimalField('Arbeitszeit Donnerstag', max_digits=10, decimal_places=2)
-    work_time_fri = models.DecimalField('Arbeitszeit Freitag', max_digits=10, decimal_places=2)
-    work_time_sat = models.DecimalField('Arbeitszeit Samstag', max_digits=10, decimal_places=2)
-    work_time_sun = models.DecimalField('Arbeitszeit Sonntag', max_digits=10, decimal_places=2)
-
+    start_date = models.DateField('Startdatum', default=date(2018,1,1))
+    work_time_mon = models.DecimalField('Arbeitszeit Montag', max_digits=10, decimal_places=2, default=8)
+    work_time_tue = models.DecimalField('Arbeitszeit Dienstag', max_digits=10, decimal_places=2, default=8)
+    work_time_wed = models.DecimalField('Arbeitszeit Mittwoch', max_digits=10, decimal_places=2, default=8)
+    work_time_thu = models.DecimalField('Arbeitszeit Donnerstag', max_digits=10, decimal_places=2, default=8)
+    work_time_fri = models.DecimalField('Arbeitszeit Freitag', max_digits=10, decimal_places=2, default=8)
+    work_time_sat = models.DecimalField('Arbeitszeit Samstag', max_digits=10, decimal_places=2, default=0)
+    work_time_sun = models.DecimalField('Arbeitszeit Sonntag', max_digits=10, decimal_places=2, default=0)
 
 class Overtime_Entry(models.Model):
     user_id = models.ForeignKey(DjangoUser, on_delete=models.CASCADE, default='1')
     overtime_date = models.DateField('Datum', unique = True)
     reg_overtime = models.DecimalField('Überstunden', max_digits=10, decimal_places=2)
-    adj_overtime = models.DecimalField('Überstunden', max_digits=10, decimal_places=2)
-    # type_options = (
-    #     ('reg', 'regular'),
-    #     ('adj', 'adjustment'),
-    # )
-    # type = models.CharField('Typ', max_length=3, choices=type_options, default = 'adj')
+    adj_overtime = models.DecimalField('Überstunden', max_digits=10, decimal_places=2, null=True)
 
-    def get_overtime(self, reference_datetime):
-        my_overtime = Overtime_Entry.objects.filter(overtime_date=reference_datetime.date())[0]
-        if my_overtime.reg_overtime is not None:
-            return my_overtime.reg_overtime + float(my_overtime.adj_overtime)
+    def get_overtime(self, reference_date, user_id):
+        my_overtime = Overtime_Entry.objects.filter(overtime_date=reference_date, user_id=user_id)
+        if my_overtime.count() > 0:
+            if my_overtime[0].reg_overtime is not None:
+                adjustment = 0
+                if my_overtime[0].adj_overtime is not None:
+                    adjustment = my_overtime[0].adj_overtime
+                return my_overtime[0].reg_overtime + adjustment
+            else:
+                pass
+                # TODO
+        my_overtime = Overtime_Entry.objects.filter(user_id=user_id).order_by('-overtime_date')
+        settings = SettingsModel.objects.filter(user_id=user_id).order_by('-created_at')
+        if settings.count() == 0:
+            settings = SettingsModel()
+            settings.save()
         else:
-            my_overtime = Overtime_Entry.lists.all()
-            if my_overtime is None:
-                settings = SettingsModel.objects.latest('created_at')[0]
-                for single_date in daterange(settings.start_date, reference_datetime.date()):
-
-
+            settings = settings[0]
+        if my_overtime.count() == 0:
+            start_range = settings.start_date
+        else:
+            my_overtime = my_overtime[0]
+            start_range = my_overtime.overtime_date + timedelta(days=1)
+        if reference_date < start_range:
+            return 0
+        for single_date in daterange(start_range, reference_date + timedelta(days=1)):
+            last_oe = Overtime_Entry.objects.filter(user_id=user_id,overtime_date=single_date+timedelta(-1))
+            last_overtime = 0
+            if last_oe.count() != 0:
+                last_overtime = float(last_oe[0].reg_overtime)
+            te = Time_Entry(start_time=datetime.combine(single_date, datetime.min.time()))
+            hours_worked = te.get_days_work_hours()
+            reg_overtime = calc_overtime(settings, single_date, hours_worked) + last_overtime
+            entry = Overtime_Entry(user_id=user_id,overtime_date=single_date,reg_overtime=reg_overtime)
+            entry.save()
+        return reg_overtime
 
 class Time_Entry(models.Model):
     user_id = models.ForeignKey(DjangoUser, on_delete=models.CASCADE, default='1')
@@ -92,7 +130,8 @@ class Time_Entry(models.Model):
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def get_overtime(self):
-        Overtime_Entry.get_overtime(self.start_time)
+        oe = Overtime_Entry()
+        return oe.get_overtime(self.start_time.date(), self.user_id)
 
     def format_timedelta(self, seconds):
         hours, remainder = divmod(seconds, 3600)
@@ -107,12 +146,19 @@ class Time_Entry(models.Model):
         return self.format_timedelta(td.seconds)
 
     def get_days_work(self):
+        work_seconds = self.get_days_work_sec()
+        return self.format_timedelta(work_seconds)
+
+    def get_days_work_sec(self):
         work_seconds = 0
         for today_entry in Time_Entry.objects.filter(start_time__date=self.start_time.date()):
-            print(today_entry, today_entry.start_time, today_entry.end_time, today_entry.end_time - today_entry.start_time)
+            # print(today_entry, today_entry.start_time, today_entry.end_time, today_entry.end_time - today_entry.start_time)
             days_work = today_entry.end_time - today_entry.start_time
             work_seconds += days_work.seconds
-        return self.format_timedelta(work_seconds)
+        return work_seconds
+
+    def get_days_work_hours(self):
+        return self.get_days_work_sec() / 3600
 
     def get_day(self):
         return str(self.start_time.date().strftime("%d.%m.%Y"))
