@@ -4,3 +4,4 @@ test.py
 runserver.bat
 db.sqlite3
 potatoesathome/settings.py
+*/migrations/*
