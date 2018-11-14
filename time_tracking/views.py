@@ -152,7 +152,7 @@ class TimeDetailView(DetailView):
 @method_decorator(login_required, name='dispatch')
 class TimeListView(ListView):
     template_name = 'time_tracking/time_list.html'
-    paginate_by = 2
+    paginate_by = 10
 
     def get_queryset(self):
         return queryset_for_time_list(100, self.request.user.id)
