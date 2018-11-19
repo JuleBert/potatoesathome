@@ -155,11 +155,11 @@ class TimeListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return queryset_for_time_list(100, self.request.user.id)
+        return queryset_for_time_list(365, self.request.user.id)
 
     def get_context_data(self, **kwargs):
         context = super(TimeListView, self).get_context_data(**kwargs)
-        time_entries = queryset_for_time_list(100, self.request.user.id)
+        time_entries = queryset_for_time_list(365, self.request.user.id)
         paginator = Paginator(time_entries, self.paginate_by)
 
         page = self.request.GET.get('page')

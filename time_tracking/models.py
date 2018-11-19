@@ -55,13 +55,14 @@ class UpperCharField(with_metaclass(models.SubfieldBase, models.CharField)):
 # Create your models here.
 class Project(models.Model):
     user_id = models.ForeignKey(DjangoUser, on_delete=models.CASCADE, default='1')
-    project_code = models.CharField('Projektcode', max_length=10, unique=True)
+    project_code = models.CharField('Projektcode', max_length=10)
     project_description = models.CharField('Projektbeschreibung', max_length=100, default = '')
     emp_options = (
+        ('KEINE','Keine'),
         ('AVGL', 'Avantgarde-labs'),
         ('CE', 'Conrad'),
     )
-    employer = models.CharField('Arbeitgeber', max_length=20, choices=emp_options, default = 'AVGL')
+    employer = models.CharField('Schnittstelle', max_length=20, choices=emp_options, default = 'KEINE')
     def __str__(self):
         return str(self.project_code) + ' ' + str(self.project_description)
 
@@ -112,7 +113,11 @@ class Overtime_Entry(models.Model):
             last_oe = Overtime_Entry.objects.filter(user_id=user_id,overtime_date=single_date+timedelta(-1))
             last_overtime = 0
             if last_oe.count() != 0:
-                last_overtime = float(last_oe[0].reg_overtime)
+                if last_oe[0].adj_overtime is not None:
+                    adjusted = float(last_oe[0].adj_overtime)
+                else:
+                    adjusted = 0
+                last_overtime = float(last_oe[0].reg_overtime) + adjusted
             te = Time_Entry(start_time=datetime.combine(single_date, datetime.min.time()))
             hours_worked = te.get_days_work_hours()
             reg_overtime = calc_overtime(settings, single_date, hours_worked) + last_overtime
