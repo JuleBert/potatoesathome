@@ -5,3 +5,5 @@ runserver.bat
 db.sqlite3
 potatoesathome/settings.py
 */migrations/*
+init_project.sh
+ddl.sql
