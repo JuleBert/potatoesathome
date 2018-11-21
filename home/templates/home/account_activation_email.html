@@ -1,7 +1,16 @@
+<<<<<<< HEAD
 {% autoescape off %}
 Hi {{ user.first_name }},
 
 Please click on the link below to confirm your registration:
 
 http://{{ domain }}{% url 'home:activate' uidb64=uid token=token %}
+=======
+{% autoescape off %}
+Hi {{ user.first_name }},
+
+Please click on the link below to confirm your registration:
+
+http://{{ domain }}{% url 'home:activate' uidb64=uid token=token %}
+>>>>>>> af88e47af6b3d3a357b3155a575ab950883e56f2
 {% endautoescape %}
