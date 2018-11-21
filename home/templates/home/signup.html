@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load static %}
@@ -43,3 +44,50 @@ potatoesathome Login
     </div>
 </div>
 {% endblock %}
+=======
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}
+potatoesathome Login
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'home/css/signin.css' %}"/>
+{% endblock %}
+
+{% block body %}
+
+<!--<h2>Sign up</h2>-->
+<!--<form method="post">-->
+    <!--{% csrf_token %}-->
+    <!--{{ form.as_p }}-->
+    <!--<button type="submit">Sign up</button>-->
+<!--</form>-->
+
+<h2>Sign up</h2>
+<div class="login-page">
+    <div class="form">
+        <form method="POST"class="register_form">
+            {% csrf_token %}
+            {% for field in form %}
+            <p>
+                {{ field.label_tag }}<br>
+                {{ field }}
+                {% if field.help_text %}
+                <small style="color: grey">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+            </p>
+            {% endfor %}
+            <button type="submit">create</button>
+            <p class="message">Already registered? <a class="message_link" href="{% url 'home:login' %}">Sign In</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+>>>>>>> af88e47af6b3d3a357b3155a575ab950883e56f2
