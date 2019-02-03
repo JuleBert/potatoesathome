@@ -5,4 +5,4 @@ This my personal little playground where i can play with django, javascript and 
 
 I also implemented my personal time tracking which should become an interface to JIRA. 
 
-And a little game of life.
+And a little game of life. 
